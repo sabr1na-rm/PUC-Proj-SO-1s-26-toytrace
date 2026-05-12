@@ -82,7 +82,7 @@ static int wait_for_initial_stop(pid_t child)
 
 static int configure_trace_options(pid_t child)
 {
-    if(ptrace(PTRACE_SETOPTIONS, child, NULL, PTRACE_TRACESYSGOOD) < 0)
+    if(ptrace(PTRACE_SETOPTIONS, child, NULL, PTRACE_O_TRACESYSGOOD) < 0)
     {
         perror("ptrace(PTRACE_SETOPTIONS)");
         return -1;
@@ -117,7 +117,7 @@ static int wait_for_syscall_stop(pid_t child, int *status)
     
     if(WIFSTOPPED(*status))
     {
-        if(WSTOPSIG(status) & 0x80)
+        if(WSTOPSIG(*status) & 0x80)
         {
             return 1;
         }
