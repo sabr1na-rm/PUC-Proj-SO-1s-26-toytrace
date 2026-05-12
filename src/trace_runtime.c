@@ -49,7 +49,7 @@ static pid_t launch_tracee(char *const argv[])
         if(ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0)
         {
             perror("ptrace(PTRACE_TRACEME)");
-            exit(1);
+            return -1;
         }
 
         raise(SIGSTOP);
@@ -57,7 +57,7 @@ static pid_t launch_tracee(char *const argv[])
         execvp(argv[0], argv);
 
         perror("execvp");
-        exit(1);
+        return -1;
     }
 
     return pid;
@@ -70,7 +70,7 @@ static int wait_for_initial_stop(pid_t child)
     if(waitpid(child, &status, 0) < 0)
     {
         perror("waitpid inicial");
-        exit(1);
+        return -1;
     }
 
     if(WIFSTOPPED(status))
