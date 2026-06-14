@@ -1,6 +1,7 @@
 #include "student_api.h"
 
 #include "syscall_names.h"
+#include "trace_helpers.h"
 
 #include <stdio.h>
 
