@@ -10,7 +10,7 @@ void student_debug_raw_event(const struct syscall_event *ev,
 {
     if(ev->entering)
     {
-        snprinft(buf, bufsz,
+        snprintf(buf, bufsz,
                  "pid=%d %s entrada args=(%#lx, %#lx, %#lx)",
                  ev->pid,
                  syscall_name(ev->syscall_no),
