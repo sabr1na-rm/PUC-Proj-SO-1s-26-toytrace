@@ -116,8 +116,13 @@ static int wait_for_syscall_stop(pid_t child, int *status)
     {
         if(WSTOPSIG(*status) & 0x80)
         {
-            return 1;
+            return 1; // syscall-stop
         }
+
+        int sig = WSTOPSIG(*status);
+        int signal_to_deliver = (sig == SIGTRAP) ? 0 : sig;
+        ptrace(PTRACE_SYSCALL, child, NULL, signal_to_deliver);
+        return wait_for_syscall_stop(child, status); // espera a próxima
     }
 
     return -1;
