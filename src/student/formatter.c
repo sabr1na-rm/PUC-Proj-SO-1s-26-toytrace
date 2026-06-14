@@ -42,7 +42,7 @@ void student_format_event(const struct syscall_event *ev,
         break;
     case 1:
         snprintf(buf, bufsz, "write(%ld, %#lx, %lu) = %ld",
-                 (long)ev->arhs[0],
+                 (long)ev->args[0],
                  ev->args[1],
                  ev->args[2],
                  ev->ret);
