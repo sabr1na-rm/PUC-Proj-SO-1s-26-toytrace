@@ -120,7 +120,7 @@ static int wait_for_syscall_stop(pid_t child, int *status)
         } else
         {
           return 2;
-        } 
+        }
     } else
     {
       return -1;
@@ -163,34 +163,36 @@ int trace_program(char *const argv[],
         int stop_kind;
 
         stop_kind = wait_for_syscall_stop(child, &status);
-        if (stop_kind < 0) {
-            return -1;
-        }
-        if (stop_kind == 0) {
-            if (WIFEXITED(status)) {
-                return WEXITSTATUS(status);
-            }
-            if (WIFSIGNALED(status)) {
-                return 128 + WTERMSIG(status);
-            }
+
+        if (stop_kind < 0)
+        return -1;
+
+        if (stop_kind == 0)
+        {
+            if (WIFEXITED(status)) return WEXITSTATUS(status);
+            if (WIFSIGNALED(status)) return 128 + WTERMSIG(status);
             return 0;
         }
 
-        if(ptrace(PTRACE_GETREGS, child, NULL, &regs) < 0)
+        if (stop_kind == 2)
+        {
+            resume_until_next_syscall(child, WSTOPSIG(status));
+            continue;
+        }
+
+        if (ptrace(PTRACE_GETREGS, child, NULL, &regs) < 0)
         {
             perror("ptrace(PTRACE_GETREGS)");
             return -1;
         }
 
         fill_event_from_regs(child, entering, &regs, &ev);
-        if (observer != NULL) {
+        if (observer != NULL)
             observer(&ev, userdata);
-        }
 
         entering = !entering;
 
-        if (resume_until_next_syscall(child, 0) < 0) {
+        if (resume_until_next_syscall(child, 0) < 0)
             return -1;
-        }
     }
 }
