@@ -123,7 +123,7 @@ static int wait_for_syscall_stop(pid_t child, int *status)
             return 1;
         } else
         {
-          return 2;
+            return 2
         }
     } else
     {
@@ -171,11 +171,16 @@ int trace_program(char *const argv[],
         if (stop_kind < 0)
         return -1;
 
-        if (stop_kind == 0)
+        if (stop_kind == 2)
         {
-            if (WIFEXITED(status)) return WEXITSTATUS(status);
-            if (WIFSIGNALED(status)) return 128 + WTERMSIG(status);
-            return 0;
+            int sig = WSTOPSIG(status);
+            if (sig == SIGTRAP)
+            {
+                sig = 0;
+            }
+            if (resume_until_next_syscall(child, sig) < 0)
+                return -1;
+            continue;
         }
 
         if (stop_kind == 2)
