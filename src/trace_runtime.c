@@ -38,7 +38,7 @@ static pid_t launch_tracee(char *const argv[])
     if(pid < 0)
     {
         fprintf(stderr, "Erro ao criar um novo processo!\n");
-        return 1;
+        return -1;
     }
 
     if(pid == 0)
@@ -46,7 +46,7 @@ static pid_t launch_tracee(char *const argv[])
         if(ptrace(PTRACE_TRACEME, 0, NULL, NULL) < 0)
         {
             perror("ptrace(PTRACE_TRACEME)");
-            return -1;
+            raise(SIGKILL);
         }
 
         raise(SIGSTOP);
@@ -54,7 +54,7 @@ static pid_t launch_tracee(char *const argv[])
         execvp(argv[0], argv);
 
         perror("execvp");
-        return -1;
+        raise(SIGKILL);
     }
 
     return pid;
@@ -73,6 +73,10 @@ static int wait_for_initial_stop(pid_t child)
     if(WIFSTOPPED(status))
     {
         return 0;
+    }
+    if (WIFSIGNALED(status)) {
+        fprintf(stderr, "Filho morreu com sinal %d antes de parar\n", WTERMSIG(status));
+        return -1;
     }
     return -1;
 }
