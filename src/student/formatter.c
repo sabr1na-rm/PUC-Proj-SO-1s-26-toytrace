@@ -1,5 +1,4 @@
 #include "student_api.h"
-
 #include "syscall_names.h"
 #include "trace_helpers.h"
 
@@ -82,3 +81,4 @@ void student_format_event(const struct syscall_event *ev,
                  ev->ret);
         break;
     }
+}
