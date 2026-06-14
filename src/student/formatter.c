@@ -3,6 +3,9 @@
 #include "trace_helpers.h"
 
 #include <stdio.h>
+#include <string.h>
+
+#include <sys/syscall.h> 
 
 void student_debug_raw_event(const struct syscall_event *ev,
                              char *buf,
