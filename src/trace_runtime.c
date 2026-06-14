@@ -123,7 +123,7 @@ static int wait_for_syscall_stop(pid_t child, int *status)
             return 1;
         } else
         {
-            return 2
+            return 2;
         }
     } else
     {
