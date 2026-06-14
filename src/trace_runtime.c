@@ -169,28 +169,26 @@ int trace_program(char *const argv[],
         stop_kind = wait_for_syscall_stop(child, &status);
 
         if (stop_kind < 0)
-        return -1;
+            return -1;
 
-        if (stop_kind == 2)
-        {
+        if (stop_kind == 0) {
+            if (WIFEXITED(status))
+                return WEXITSTATUS(status);
+            if (WIFSIGNALED(status))
+                return 128 + WTERMSIG(status);
+            return 0;
+        }
+
+        if (stop_kind == 2) {
             int sig = WSTOPSIG(status);
             if (sig == SIGTRAP)
-            {
                 sig = 0;
-            }
             if (resume_until_next_syscall(child, sig) < 0)
                 return -1;
             continue;
         }
 
-        if (stop_kind == 2)
-        {
-            resume_until_next_syscall(child, WSTOPSIG(status));
-            continue;
-        }
-
-        if (ptrace(PTRACE_GETREGS, child, NULL, &regs) < 0)
-        {
+        if (ptrace(PTRACE_GETREGS, child, NULL, &regs) < 0) {
             perror("ptrace(PTRACE_GETREGS)");
             return -1;
         }
